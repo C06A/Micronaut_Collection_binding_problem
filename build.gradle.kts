@@ -44,11 +44,6 @@ dependencies {
     testCompile("org.junit.jupiter:junit-jupiter-api:5.1.0")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.1.0")
 
-//    testCompile("org.jetbrains.spek:spek-api:${spekVersion}")
-//    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:${spekVersion}")
-//    testCompile("org.spekframework.spek2:spek-dsl-jvm:${spekVersion}")
-//    testRuntime("org.spekframework.spek2:spek-runner-junit5:${spekVersion}")
-
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.0")
 
     testAnnotationProcessor("io.micronaut:micronaut-inject-java")
@@ -71,7 +66,7 @@ run.jvmArgs("-noverify", "-XX:TieredStopAtLevel=1")
 
 val test: Test by tasks
 test.useJUnitPlatform {
-    includeEngines("spek", "spek2", "some-other-test-engine")
+    includeEngines()
 }
 
 tasks.withType<KotlinCompile> {

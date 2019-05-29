@@ -3,6 +3,7 @@ package com.helpchoice.kotlin.sample
 import io.kotlintest.Spec
 import io.kotlintest.TestCaseOrder
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotThrow
 import io.kotlintest.specs.StringSpec
 import io.micronaut.context.ApplicationContext
 import io.micronaut.http.client.HttpClient
@@ -23,88 +24,74 @@ internal class StackSampleTest : StringSpec() {
 
     init {
         "test stack" {
-            val response: String = client.toBlocking().retrieve("/repeat/1/2.3/4.0")
-            response shouldBe ""
+            client.toBlocking().retrieve("/repeat/1/2.3") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/1/2.3\",\"type\":\"application/hal+json\"}},\"stack\":[2.3],\"value\":1}"
+
+            client.toBlocking().retrieve("/repeat/1/2.3,4.0") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/1/2.3/4.0\",\"type\":\"application/hal+json\"}},\"stack\":[2.3,4.0],\"value\":1}"
+
+            client.toBlocking().retrieve("/repeat/1/2.3,4.0,-12") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/1/2.3/4.0/-12\",\"type\":\"application/hal+json\"}},\"stack\":[2.3,4.0,-12],\"value\":1}"
+
+            shouldNotThrow<Throwable> { client.toBlocking().retrieve("/repeat/1/2.3/4.0") }
         }
 
         "test single value" {
-            var response: String = client.toBlocking().retrieve("/repeat/2")
-            response shouldBe ""
+            client.toBlocking().retrieve("/repeat/2") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2\",\"type\":\"application/hal+json\"}},\"value\":2}"
 
-            response = client.toBlocking().retrieve("/repeat/2.3")
-            response shouldBe ""
+            client.toBlocking().retrieve("/repeat/2.3") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2.3\",\"type\":\"application/hal+json\"}},\"value\":2.3}"
 
-            response = client.toBlocking().retrieve("/repeat/-3")
-            response shouldBe ""
+            client.toBlocking().retrieve("/repeat/-3") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/-3\",\"type\":\"application/hal+json\"}},\"value\":-3}"
 
-            response = client.toBlocking().retrieve("/repeat/-3.2")
-            response shouldBe ""
+            client.toBlocking().retrieve("/repeat/-3.2") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/-3.2\",\"type\":\"application/hal+json\"}},\"value\":-3.2}"
 
-            response = client.toBlocking().retrieve("/repeat/0")
-            response shouldBe ""
+            client.toBlocking().retrieve("/repeat/0") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/0\",\"type\":\"application/hal+json\"}},\"value\":0}"
 
-            response = client.toBlocking().retrieve("/repeat/2.34567")
-            response shouldBe ""
+            client.toBlocking().retrieve("/repeat/2.34567") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2.34567\",\"type\":\"application/hal+json\"}},\"value\":2.34567}"
         }
 
         "test {+strings}" {
-            var response: String = client.toBlocking().retrieve("/strPlus/2")
-            response shouldBe ""
 
-            response = client.toBlocking().retrieve("/strPlus/2/3")
-            response shouldBe ""
+            client.toBlocking().retrieve("/strPlus/2/3") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2/3\",\"type\":\"application/hal+json\"}},\"stack\":[3],\"value\":2}"
 
-            response = client.toBlocking().retrieve("/strPlus/-2/-3")
-            response shouldBe ""
+            client.toBlocking().retrieve("/strPlus/-2/-3") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/-2/-3\",\"type\":\"application/hal+json\"}},\"stack\":[-3],\"value\":-2}"
 
-            response = client.toBlocking().retrieve("/strPlus/2.3")
-            response shouldBe ""
+            client.toBlocking().retrieve("/strPlus/2/3/4.567") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2/3/4.567\",\"type\":\"application/hal+json\"}},\"stack\":[3,4.567],\"value\":2}"
 
-            response = client.toBlocking().retrieve("/strPlus/2/3/4.567")
-            response shouldBe ""
+            client.toBlocking().retrieve("/strPlus/2/3/4.567/8") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2/3/4.567/8\",\"type\":\"application/hal+json\"}},\"stack\":[3,4.567,8],\"value\":2}"
 
-            response = client.toBlocking().retrieve("/strPlus/2/3/4.567/8")
-            response shouldBe ""
+            // there is no way to make second parameter optional
+
+//            client.toBlocking().retrieve("/strPlus/2") shouldBe ""
+
+//            client.toBlocking().retrieve("/strPlus/2.3") shouldBe ""
         }
 
         "test {/strings}" {
-            var response: String = client.toBlocking().retrieve("/str/2")
-            response shouldBe ""
+            client.toBlocking().retrieve("/str/2") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2\",\"type\":\"application/hal+json\"}},\"value\":2}"
 
-            response = client.toBlocking().retrieve("/str/2/3")
-            response shouldBe ""
+            client.toBlocking().retrieve("/str/2/3") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2/3\",\"type\":\"application/hal+json\"}},\"stack\":[3],\"value\":2}"
 
-            response = client.toBlocking().retrieve("/str/-2/-3")
-            response shouldBe ""
+            client.toBlocking().retrieve("/str/-2/-3") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/-2/-3\",\"type\":\"application/hal+json\"}},\"stack\":[-3],\"value\":-2}"
 
-            response = client.toBlocking().retrieve("/str/2.3")
-            response shouldBe ""
+            client.toBlocking().retrieve("/str/2.3") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2.3\",\"type\":\"application/hal+json\"}},\"value\":2.3}"
 
-            response = client.toBlocking().retrieve("/str/2/3/4.567")
-            response shouldBe ""
+            client.toBlocking().retrieve("/str/2/3/4.567") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2/3/4.567\",\"type\":\"application/hal+json\"}},\"stack\":[3,4.567],\"value\":2}"
 
-            response = client.toBlocking().retrieve("/str/2/3/4.567/8")
-            response shouldBe ""
+            client.toBlocking().retrieve("/str/2/3/4.567/8") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2/3/4.567/8\",\"type\":\"application/hal+json\"}},\"stack\":[3,4.567,8],\"value\":2}"
         }
 
         "test {/int} Collection" {
-            var response: String = client.toBlocking().retrieve("/int/2")
-            response shouldBe ""
+            client.toBlocking().retrieve("/int/2") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2\",\"type\":\"application/hal+json\"}},\"value\":2}"
 
-            response = client.toBlocking().retrieve("/int/2/3")
-            response shouldBe ""
+            client.toBlocking().retrieve("/int/2/3") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2/3\",\"type\":\"application/hal+json\"}},\"stack\":[3],\"value\":2}"
 
-            response = client.toBlocking().retrieve("/int/-2/-3")
-            response shouldBe ""
+            client.toBlocking().retrieve("/int/-2/-3") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/-2/-3\",\"type\":\"application/hal+json\"}},\"stack\":[-3],\"value\":-2}"
 
-            response = client.toBlocking().retrieve("/int/2.3")
-            response shouldBe ""
+            client.toBlocking().retrieve("/int/2.3") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2.3\",\"type\":\"application/hal+json\"}},\"value\":2.3}"
 
-            response = client.toBlocking().retrieve("/int/2/3,4.567")
-            response shouldBe ""
+            client.toBlocking().retrieve("/int/2/3,4.567") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2/3/4.567\",\"type\":\"application/hal+json\"}},\"stack\":[3,4.567],\"value\":2}"
 
-            response = client.toBlocking().retrieve("/int/2/3,4.567/8")
-            response shouldBe ""
+            client.toBlocking().retrieve("/int/2/3,4.567,8") shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2/3/4.567/8\",\"type\":\"application/hal+json\"}},\"stack\":[3,4.567,8],\"value\":2}"
+
+            shouldNotThrow<Throwable> { client.toBlocking().retrieve("/int/2/3/4.567/8") } // shouldBe "{\"_links\":{\"self\":{\"href\":\"/repeat/2/3/4.567/8\",\"type\":\"application/hal+json\"}},\"stack\":[3,4.567,8],\"value\":2}"
         }
     }
 

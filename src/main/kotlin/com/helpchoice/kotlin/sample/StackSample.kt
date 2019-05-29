@@ -66,7 +66,7 @@ class StackSample {
         return collectionStar(value.toBigDecimal(), stack?.split("/")?.map { it.toBigDecimal() })
     }
 
-    @Get("/int/{value}{/stack}")
+    @Get("/int/{value}{/stack*}")
     fun intComma(value: BigDecimal, stack: Collection<BigDecimal>?): Map<String, Any?> {
         return collectionStar(value, stack)
     }
