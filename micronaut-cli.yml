@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: com.helpchoice.kotlin.sample
+---
+testFramework: spek
+sourceLanguage: kotlin
